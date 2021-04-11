@@ -1,0 +1,12 @@
+{
+  "name": "todo_firebase",
+  "displayName": "todo_firebase",
+  "expo": {
+    "name": "todo_firebase",
+    "slug": "todo_firebase",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
