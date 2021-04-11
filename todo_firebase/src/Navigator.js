@@ -4,7 +4,9 @@ import MainStack from './stack/MainStack';
 import { LogBox } from 'react-native';
 
 export default (props) => {
-    
+    LogBox.ignoreLogs([
+        "Non-serializable values"
+    ])
     return (
             <NavigationContainer>
                 <MainStack />
