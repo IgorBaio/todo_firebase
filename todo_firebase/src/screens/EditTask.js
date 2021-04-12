@@ -21,13 +21,18 @@ import AsyncStorage from '@react-native-community/async-storage';
 const initialState = { desc: '', date: new Date(), showDatePicker: false };
 
 export default ({ navigation, route }) => {
-  const {onSave, showDoneTasks} = route.params
-  const user = useSelector(state => state.save.user);
+  const {item} = route.params
+  const showDoneTasks = route.params.showDoneTasks || true
   const tasks = useSelector(state=>state.save.tasks)
-  console.log(onSave)
-  const [titulo, setTitulo] = useState('')
-  const [descricao, setDescricao] = useState('')
-  const [date, setDate] = useState(moment());
+  const user = useSelector(state => state.save.user);
+  console.log('item.date',item.date)
+  const [titulo, setTitulo] = useState(item.title)
+  const [descricao, setDescricao] = useState(item.desc)
+  const [date, setDate] = useState(moment(item.date)
+  .locale('pt-br')
+  .format(
+    'ddd, D [de] MMMM [de] YYYY',
+  ));
   const [showDatePicker, setshowDatePicker] = useState('')
   const dispatch = useDispatch()
 
@@ -48,21 +53,23 @@ export default ({ navigation, route }) => {
     // setVisibleTasks(visibleTasks)
     AsyncStorage.setItem('tasksState', JSON.stringify({tasks,visibleTasks:visibleTasks_aux}))
   };
-
+  
   const addTask = newTask => {
     console.log('newTaks', newTask)
     if (!newTask.desc || !newTask.desc.trim()) {
       Alert.alert('Dados Inválidos', 'Descrição Inválida');
       return;
     }
-    const tasks_aux = [...tasks];
-    tasks_aux.push({
-      id: Math.random(),
-      title: newTask.title,
-      desc: newTask.desc,
-      estimateAt: newTask.date,
-      doneAt: null,
-    });
+    let tasks_aux = [...tasks];
+    tasks_aux.forEach(task=>{
+      if(task.id === newTask.id){
+        task.title = newTask.title
+        task.desc = newTask.desc
+        task.estimateAt = newTask.estimateAt
+        task.date = newTask.date
+      }
+    })
+    
     console.log(tasks_aux)
     dispatch({
       type:'refreshTask',
@@ -71,39 +78,40 @@ export default ({ navigation, route }) => {
     // setTasksState(tasks)
     filterTasks()
   };
+
+
   const save = () => {
-    const newTask = {
-      id: Math.random(),
+    const editedTask = {
+      id: item.id,
       title: titulo,
       desc: descricao,
-      date,
+      date:date,
       uid: user.uid
     };
-    // onSave && onSave(newTask)
-    
-    addTask(newTask)
+    // onSave && onSave(editedTask)
+    addTask(editedTask)
   };
 
   const showerDatePicker = (show) => setshowDatePicker(show)
-
   const getDatePicker = () => {
     let dateAux;
     let datePicker = (
       <DateTimePicker
         value={new Date()}
         onChange={(_, date) => {
-          setDate(date)
-          dateAux = date
+          setDate(moment(date).format(
+            'ddd, D [de] MMMM [de] YYYY',
+          ))
+          dateAux = moment(date).format(
+            'ddd, D [de] MMMM [de] YYYY',
+          )
           setshowDatePicker(false)
         }}
         mode="date"
       />
     );
 
-    const dateString = date.locale('pt-br')
-    .format(
-      'ddd, D [de] MMMM [de] YYYY',
-    )
+    const dateString = date
     
     console.log(dateString)
     if (Platform.OS === 'android') {
@@ -120,9 +128,10 @@ export default ({ navigation, route }) => {
     return datePicker;
   };
 
+
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Nova Tarefa</Text>
+      <Text style={styles.header}>Editar Tarefa</Text>
       <TextInput
         style={styles.input}
         placeholder="Informe o Título"

@@ -9,6 +9,30 @@ export default (props) => {
   // const navigation = useNavigation();
   useEffect(() => {
     const checkUser = async () => {
+      const taskState = await AsyncStorage.getItem('tasksState') 
+      dispatch({
+        type:'tasksState',
+        tasksState: JSON.parse(taskState)
+      })
+      //  await AsyncStorage
+      //  .setItem("tasksState",JSON
+      //  .stringify({
+      //    tasks:[
+      //      {
+      //        "desc": "sadasd", 
+      //        "doneAt": null, 
+      //        "estimateAt": "seg, 12 de abril", 
+      //        "id": 0.5174755272100908, 
+      //        "title": "asdas"
+      //       }], 
+      //    visibleTasks:[
+      //     {
+      //       "desc": "sadasd", 
+      //       "doneAt": null, 
+      //       "estimateAt": "seg, 12 de abril", 
+      //       "id": 0.5174755272100908, 
+      //       "title": "asdas"
+      //      }]}));
       const emailLogged = await AsyncStorage.getItem("email");
       const passwordLogged = await AsyncStorage.getItem("password");
       const uidLogged = await AsyncStorage.getItem("uid");
