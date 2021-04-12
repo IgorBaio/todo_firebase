@@ -41,7 +41,7 @@ export default ({ navigation }) => {
           uid:userAccount.user.uid
         }
       })
-      navigation.navigate('TaskList')
+      navigation.navigate('TaskList', {routeLogin:true})
     }else{
       setMessageError("Preencha os campos")
     }

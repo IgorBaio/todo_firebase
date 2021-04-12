@@ -6,8 +6,7 @@ import TelaLogin from "../screens/TelaLogin";
 import TelaCadastro from "../screens/TelaCadastro";
 import TaskList from "../screens/TaskList";
 import AdicTask from "../screens/AdicTask";
-// import SignUp from "../screens/SignUp";
-// import Barber from "../screens/Barber";
+import EditTask from "../screens/EditTask";
 
 const Stack = createStackNavigator();
 
@@ -24,10 +23,7 @@ export default (props) => {
        <Stack.Screen name="TelaLogin" component={TelaLogin} />
        <Stack.Screen name="TelaCadastro" component={TelaCadastro} />
        <Stack.Screen name="AdicTask" component={AdicTask} />
-       {/* <Stack.Screen name="MainTab" component={MainTab} /> */}
-      {/*<Stack.Screen name="SignIn" component={SignIn} />
-      <Stack.Screen name="SignUp" component={SignUp} />
-      <Stack.Screen name="Barber" component={Barber} /> */}
+       <Stack.Screen name="EditTask" component={EditTask} />
     </Stack.Navigator>
   );
 };
