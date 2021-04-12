@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component, useEffect, useState } from 'react';
 import {
   Text,
   SafeAreaView,
@@ -10,70 +10,38 @@ import {
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import commonStyles from '../commonStyles';
 import Icon from 'react-native-vector-icons/FontAwesome';
-
+import { Card, Checkbox, Title, Subheading } from 'react-native-paper'
 import moment from 'moment';
 import 'moment/locale/pt-br';
+import { useDispatch, useSelector } from 'react-redux';
+import AsyncStorage from '@react-native-community/async-storage';
 
-// export default ({item, doneAt, estimateAt, onDelete,onToggleTask }) => {
-//   console.log('item',item)
-//   const doneOrNotStyle =
-//     doneAt !== null ? {textDecorationLine: 'line-through'} : {};
-
-//   const date = doneAt ? doneAt : estimateAt;
-//   const formattedDate = moment(date)
-//     .local('pt-br')
-//     .format('ddd, D [de] MMMM');
-
-//   const getRightContent = () => {
-//     return (
-//       <TouchableOpacity style={styles.right}>
-//         <Icon
-//           name="trash"
-//           size={30}
-//           color="#FFF"
-//           onPress={() => onDelete && onDelete(item.id)}
-//         />
-//       </TouchableOpacity>
-//     );
-//   };
-//   const getLeftContent = () => {
-//     return (
-//       <TouchableOpacity style={styles.left}>
-//         <Icon name="trash" size={20} color="#FFF" style={styles.excludedIcon} />
-//         <Text style={styles.excludedText}>Excluir</Text>
-//       </TouchableOpacity>
-//     );
-//   };
-//   return (
-//     <Swipeable
-//       renderRightActions={getRightContent}
-//       renderLeftActions={getLeftContent}
-//       onSwipeableLeftOpen={() => onDelete && onDelete(item.id)}>
-//       <View style={styles.container}>
-//         <TouchableWithoutFeedback onPress={() => onToggleTask(item.id)}>
-//           <View style={styles.checkContainer}>
-//             {getCheckView(doneAt)}
-//           </View>
-//         </TouchableWithoutFeedback>
-//         <View>
-//           <Text style={[styles.desc, doneOrNotStyle]}>{item.desc}</Text>
-//           <Text style={styles.date}>{formattedDate}</Text>
-//         </View>
-//         {/* <Text>{props.doneAt + ""}</Text> */}
-//       </View>
-//     </Swipeable>
-//   );
-// };
-
-export default props => {
+export default ({ onDelete, item, onToggleTask, navigation, showDoneTasks }) => {
+  console.log('item', item)
   const doneOrNotStyle =
-    props.doneAt !== null ? {textDecorationLine: 'line-through'} : {};
+    item.doneAt !== undefined && item.doneAt !== null && item.doneAt !== '' ? { textDecorationLine: 'line-through' } : {};
+  const [done, setDone] = useState(item.doneAt !== undefined && item.doneAt !== null && item.doneAt !== ''? moment(item.doneAt).format(
+    'ddd, D [de] MMMM [de] YYYY',
+  ):null)
+  const date = item.doneAt !== undefined && item.doneAt !== null && item.doneAt !== '' ? item.doneAt : item.estimateAt;
+  const tasks = useSelector(state=>state.save.tasks)
+  const dispatch = useDispatch()
+  useEffect(() => { 
+    console.log('passei')
+    const task_aux = [...tasks]
+    task_aux.forEach(task=>{
+      if(task.id===item.id){
+        item.doneAt = done
+      }
 
-  const date = props.doneAt ? props.doneAt : props.estimateAt;
-  const formattedDate = moment(date)
-    .local('pt-br')
-    .format('ddd, D [de] MMMM');
+    })
+    dispatch({
+      type:'refreshTask',
+      tasks: task_aux
+    })
 
+    // AsyncStorage.setItem('tasksSstate',task_aux)
+  }, [done])
   const getRightContent = () => {
     return (
       <TouchableOpacity style={styles.right}>
@@ -81,7 +49,7 @@ export default props => {
           name="trash"
           size={30}
           color="#FFF"
-          onPress={() => props.onDelete && props.onDelete(props.id)}
+          onPress={() => onDelete && onDelete(item.id)}
         />
       </TouchableOpacity>
     );
@@ -94,38 +62,60 @@ export default props => {
       </TouchableOpacity>
     );
   };
+  const toggle = (item) => {
+    if (item.doneAt !== null) {
+      console.log('cheguei 4')
+      onToggleTask(item)
+      return (
+        <View style={styles.done}>
+          <Icon name="check" size={20} color={commonStyles.colors.secundary} />
+        </View>
+      );
+    } else {
+      console.log('cheguei 5')
+      onToggleTask(item)
+      return <View style={styles.pending} />;
+    }
+  }
   return (
     <Swipeable
       renderRightActions={getRightContent}
       renderLeftActions={getLeftContent}
-      onSwipeableLeftOpen={() => props.onDelete && props.onDelete(props.id)}>
+      onSwipeableLeftOpen={() => onDelete && onDelete(item.id)}>
       <View style={styles.container}>
-        <TouchableWithoutFeedback onPress={() => props.onToggleTask(props.id)}>
-          <View style={styles.checkContainer}>
-            {getCheckView(props.doneAt)}
-          </View>
-        </TouchableWithoutFeedback>
-        <View>
-          <Text style={[styles.desc, doneOrNotStyle]}>{props.desc}</Text>
-          <Text style={styles.date}>{formattedDate}</Text>
-        </View>
-        {/* <Text>{props.doneAt + ""}</Text> */}
+
+        <Card style={{ width: '90%', left: 15, elevation: 8 }}>
+          <Card.Content>
+            <View style={{ flexDirection: 'row' }}>
+              <Checkbox
+                value={item.doneAt}
+                onPress={() => {
+                  if (done != null) {
+                    setDone(null)
+                  } else {
+                   
+                    setDone(moment().format(
+                      'ddd, D [de] MMMM [de] YYYY',
+                    ))
+                  }
+
+                }}
+                status={done !== null ? 'checked' : 'unchecked'}
+              />
+              <TouchableOpacity onPress={() => navigation.navigate('EditTask', { item, showDoneTasks })}>
+
+                <Title style={[styles.desc, doneOrNotStyle]}>{item.title}</Title>
+                <Text style={styles.date}>{date}</Text>
+              </TouchableOpacity>
+            </View>
+          </Card.Content>
+        </Card>
+        
       </View>
     </Swipeable>
   );
 };
 
-const getCheckView = doneAt => {
-  if (doneAt !== null) {
-    return (
-      <View style={styles.done}>
-        <Icon name="check" size={20} color={commonStyles.colors.secundary} />
-      </View>
-    );
-  } else {
-    return <View style={styles.pending} />;
-  }
-};
 
 const styles = StyleSheet.create({
   container: {
@@ -134,12 +124,14 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     alignItems: 'center',
     paddingVertical: 10,
-    backgroundColor:'#fff'
+    backgroundColor: '#fff',
+    left: 5
   },
   checkContainer: {
     width: '20%',
     alignItems: 'center',
     justifyContent: 'center',
+    left: 5
   },
   pending: {
     height: 25,
@@ -174,7 +166,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   left: {
-    flex:1,
+    flex: 1,
     backgroundColor: 'red',
     flexDirection: 'row',
     alignItems: 'center',
@@ -185,7 +177,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     margin: 10,
   },
-  excludedIcon:{
-    marginLeft:10,
+  excludedIcon: {
+    marginLeft: 10,
   },
 });

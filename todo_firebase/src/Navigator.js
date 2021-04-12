@@ -5,7 +5,8 @@ import { LogBox } from 'react-native';
 
 export default (props) => {
     LogBox.ignoreLogs([
-        "Non-serializable values"
+        "Non-serializable values",
+        "Deprecation",
     ])
     return (
             <NavigationContainer>
