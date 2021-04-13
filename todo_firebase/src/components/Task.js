@@ -14,7 +14,7 @@ import { Card, Checkbox, Title, Subheading } from 'react-native-paper'
 import moment from 'moment';
 import 'moment/locale/pt-br';
 import { useDispatch, useSelector } from 'react-redux';
-import AsyncStorage from '@react-native-community/async-storage';
+import { updateTask } from '../Service/functions';
 
 export default ({ onDelete, item, routeLogin, navigation, showDoneTasks }) => {
   const doneOrNotStyle =
@@ -30,6 +30,8 @@ export default ({ onDelete, item, routeLogin, navigation, showDoneTasks }) => {
     task_aux.forEach(task => {
       if (task.idlocal === item.idlocal) {
         item.doneAt = done
+        item.status = done ? 'closed' : 'open'
+        updateTask(item)
       }
 
     })
@@ -76,10 +78,8 @@ export default ({ onDelete, item, routeLogin, navigation, showDoneTasks }) => {
                   if (done != null) {
                     setDone(null)
                   } else {
-
                     setDone(moment())
                   }
-
                 }}
                 status={done !== null ? 'checked' : 'unchecked'}
               />
@@ -91,7 +91,6 @@ export default ({ onDelete, item, routeLogin, navigation, showDoneTasks }) => {
             </View>
           </Card.Content>
         </Card>
-
       </View>
     </Swipeable>
   );
