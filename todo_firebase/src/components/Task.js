@@ -16,31 +16,28 @@ import 'moment/locale/pt-br';
 import { useDispatch, useSelector } from 'react-redux';
 import AsyncStorage from '@react-native-community/async-storage';
 
-export default ({ onDelete, item, onToggleTask, navigation, showDoneTasks }) => {
-  console.log('item', item)
+export default ({ onDelete, item, routeLogin, navigation, showDoneTasks }) => {
   const doneOrNotStyle =
     item.doneAt !== undefined && item.doneAt !== null && item.doneAt !== '' ? { textDecorationLine: 'line-through' } : {};
-  const [done, setDone] = useState(item.doneAt !== undefined && item.doneAt !== null && item.doneAt !== ''? moment(item.doneAt).format(
-    'ddd, D [de] MMMM [de] YYYY',
-  ):null)
+  const [done, setDone] = useState(item.doneAt !== undefined && item.doneAt !== null && item.doneAt !== '' ? item.doneAt : null)
+
   const date = item.doneAt !== undefined && item.doneAt !== null && item.doneAt !== '' ? item.doneAt : item.estimateAt;
-  const tasks = useSelector(state=>state.save.tasks)
+  const tasks = useSelector(state => state.save.tasks)
   const dispatch = useDispatch()
-  useEffect(() => { 
+  useEffect(() => {
     console.log('passei')
     const task_aux = [...tasks]
-    task_aux.forEach(task=>{
-      if(task.id===item.id){
+    task_aux.forEach(task => {
+      if (task.idlocal === item.idlocal) {
         item.doneAt = done
       }
 
     })
     dispatch({
-      type:'refreshTask',
+      type: 'refreshTask',
       tasks: task_aux
     })
 
-    // AsyncStorage.setItem('tasksSstate',task_aux)
   }, [done])
   const getRightContent = () => {
     return (
@@ -49,7 +46,7 @@ export default ({ onDelete, item, onToggleTask, navigation, showDoneTasks }) => 
           name="trash"
           size={30}
           color="#FFF"
-          onPress={() => onDelete && onDelete(item.id)}
+          onPress={() => onDelete && onDelete(item.idlocal)}
         />
       </TouchableOpacity>
     );
@@ -62,26 +59,12 @@ export default ({ onDelete, item, onToggleTask, navigation, showDoneTasks }) => 
       </TouchableOpacity>
     );
   };
-  const toggle = (item) => {
-    if (item.doneAt !== null) {
-      console.log('cheguei 4')
-      onToggleTask(item)
-      return (
-        <View style={styles.done}>
-          <Icon name="check" size={20} color={commonStyles.colors.secundary} />
-        </View>
-      );
-    } else {
-      console.log('cheguei 5')
-      onToggleTask(item)
-      return <View style={styles.pending} />;
-    }
-  }
+  
   return (
     <Swipeable
       renderRightActions={getRightContent}
       renderLeftActions={getLeftContent}
-      onSwipeableLeftOpen={() => onDelete && onDelete(item.id)}>
+      onSwipeableLeftOpen={() => onDelete && onDelete(item.idlocal)}>
       <View style={styles.container}>
 
         <Card style={{ width: '90%', left: 15, elevation: 8 }}>
@@ -93,24 +76,22 @@ export default ({ onDelete, item, onToggleTask, navigation, showDoneTasks }) => 
                   if (done != null) {
                     setDone(null)
                   } else {
-                   
-                    setDone(moment().format(
-                      'ddd, D [de] MMMM [de] YYYY',
-                    ))
+
+                    setDone(moment())
                   }
 
                 }}
                 status={done !== null ? 'checked' : 'unchecked'}
               />
-              <TouchableOpacity onPress={() => navigation.navigate('EditTask', { item, showDoneTasks })}>
+              <TouchableOpacity onPress={() => navigation.navigate('EditTask', { item, showDoneTasks, routeLogin })}>
 
                 <Title style={[styles.desc, doneOrNotStyle]}>{item.title}</Title>
-                <Text style={styles.date}>{date}</Text>
+                <Text style={styles.date}>{moment(date).format('ddd, D [de] MMMM [de] YYYY')}</Text>
               </TouchableOpacity>
             </View>
           </Card.Content>
         </Card>
-        
+
       </View>
     </Swipeable>
   );

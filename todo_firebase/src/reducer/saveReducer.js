@@ -1,12 +1,13 @@
 const initialState = {
     tasks: [],
     visibleTasks: [],
-    user:{},
-    tasksState: []
+    user: {},
+    tasksState: [],
+    showDoneTasks: true
 }
 
 const saveReducer = (state = initialState, action) => {
-    switch(action.type){
+    switch (action.type) {
         case 'saveTask':
             console.log('reducer')
             state.tasks = [...state.tasks, action.tasks];
@@ -31,6 +32,9 @@ const saveReducer = (state = initialState, action) => {
         case 'login':
             console.log('reducer login')
             state.user = action.user;
+            return state;
+        case 'setShowDoneTasks':
+            state.showDoneTasks = action.showDoneTasks;
             return state;
         default:
             return state;
