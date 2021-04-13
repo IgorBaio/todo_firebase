@@ -1,54 +1,47 @@
 import React, { useEffect } from "react";
 import { Container, LoadingIcon } from "./styles";
 import AsyncStorage from "@react-native-community/async-storage";
-import { useNavigation } from "@react-navigation/native";
 import { useDispatch } from "react-redux";
+import { getTasksByUser } from "../../Service/functions";
+import { Title } from "react-native-paper";
 
-export default (props) => {
+export default ({navigation}) => {
+  //#region Declarações
   const dispatch = useDispatch()
-  // const navigation = useNavigation();
+  //#endregion
+
+  //#region useEffects
   useEffect(() => {
     const checkUser = async () => {
-      const taskState = await AsyncStorage.getItem('tasksState') 
-      dispatch({
-        type:'tasksState',
-        tasksState: JSON.parse(taskState)
-      })
-      //  await AsyncStorage
-      //  .setItem("tasksState",JSON
-      //  .stringify({
-      //    tasks:[
-      //      {
-      //        "desc": "sadasd", 
-      //        "doneAt": null, 
-      //        "estimateAt": "seg, 12 de abril", 
-      //        "id": 0.5174755272100908, 
-      //        "title": "asdas"
-      //       }], 
-      //    visibleTasks:[
-      //     {
-      //       "desc": "sadasd", 
-      //       "doneAt": null, 
-      //       "estimateAt": "seg, 12 de abril", 
-      //       "id": 0.5174755272100908, 
-      //       "title": "asdas"
-      //      }]}));
       const emailLogged = await AsyncStorage.getItem("email");
       const passwordLogged = await AsyncStorage.getItem("password");
       const uidLogged = await AsyncStorage.getItem("uid");
-      dispatch({
-        type: 'login',
-        user: {
-          email: emailLogged,
-          uid: uidLogged
-        }
-      })
+
       if (emailLogged != null && emailLogged !== ''
         && passwordLogged != null && passwordLogged !== ''
         && uidLogged != null && uidLogged !== '') {
-        props.navigation.navigate("TaskList");
+        let taskState = { tasks: [], visibleTasks: [] };
+         const tasks = await getTasksByUser(uidLogged)
+         taskState.tasks = tasks
+       
+        dispatch({
+          type: 'tasksState',
+          tasksState: taskState,
+
+        })
+        dispatch({
+          type: 'login',
+          user: {
+            email: emailLogged,
+            uid: uidLogged
+          },
+
+        })
+        navigation.reset({
+          routes: [{ name: "TaskList" }],
+        });
       } else {
-        props.navigation.reset({
+        navigation.reset({
           routes: [{ name: "TelaLogin" }],
         });
       }
@@ -56,9 +49,11 @@ export default (props) => {
 
     checkUser();
   }, []);
+  //#endregion
 
   return (
     <Container>
+      <Title>Baixando tarefas</Title>
       <LoadingIcon size="large" color="#422E47" />
     </Container>
   );
