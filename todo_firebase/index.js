@@ -1,16 +1,12 @@
 import { registerRootComponent } from 'expo';
-// import React from 'react'
-// import { NavigationContainer } from '@react-navigation/native';
-// import MainStack from './src/stack/MainStack';
 import { Provider } from "react-redux";
 import storeConfig from './src/store/configureStore'
 import React from 'react'
 import Navigator from "./src/Navigator";
-// const Navigator = () => (
-//     <NavigationContainer>
-//         <MainStack />
-//     </NavigationContainer>
-// )
+import axios from 'axios'
+
+axios.defaults.baseURL= 'http://10.0.2.2:3333/'
+
 const store = storeConfig()
 const Redux = () => (
     <Provider store={store}>
