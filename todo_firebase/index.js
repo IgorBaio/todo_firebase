@@ -5,7 +5,7 @@ import React from 'react'
 import Navigator from "./src/Navigator";
 import axios from 'axios'
 
-axios.defaults.baseURL= 'http://10.0.2.2:3333/'
+axios.defaults.baseURL= 'https://api-todo-firebase.herokuapp.com/'
 
 const store = storeConfig()
 const Redux = () => (
