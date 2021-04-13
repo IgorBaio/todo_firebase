@@ -7,6 +7,7 @@ export default (props) => {
     LogBox.ignoreLogs([
         "Non-serializable values",
         "Deprecation",
+        "Encountered two children",
     ])
     return (
             <NavigationContainer>

@@ -27,7 +27,7 @@ const Input = styled.TextInput`
 export default ({ IconName, placeholder, value, onChangeText, password }) => {
   return (
     <InputArea colorInput={commonStyles.colors.primary}>
-      <IconMaterial name={IconName} size={40} color={commonStyles.colors.tertiary} />
+      <IconMaterial name={IconName} size={25} color={commonStyles.colors.tertiary} />
       <Input
         colorInput={commonStyles.colors.primary}
         placeholder={placeholder}
