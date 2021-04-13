@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet } from "react-native";
 import { createStackNavigator } from "@react-navigation/stack";
 import Preload from "../screens/Preload/index";
 import TelaLogin from "../screens/TelaLogin";
@@ -10,7 +10,7 @@ import EditTask from "../screens/EditTask";
 
 const Stack = createStackNavigator();
 
-export default (props) => {
+export default () => {
   return (
     <Stack.Navigator
       initialRouteName="Preload"
