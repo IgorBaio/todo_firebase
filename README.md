@@ -24,7 +24,7 @@ para se logar ao app, caso contrário, pode navegar à tela de cadastro para se 
 Tela de listagem, mostra todas as tarefas registradas no celular
 Clicando no botão de adicionar é levado à tela 4
 Arrastando a tarefa da esquerda para direita exclui automaticamente a tarefa
-Arrastando a tarefa da direita para esquerda aparece um botão que permite a exclus~~ao da tarefa
+Arrastando a tarefa da direita para esquerda aparece um botão que permite a exclusão da tarefa
 
 ### Tela 3:
 Tela de visualização da tarefa, permite o usuário editar os dados e excluir determinada tarefa
