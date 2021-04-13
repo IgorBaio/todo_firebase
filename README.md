@@ -1,7 +1,7 @@
 # Bem-vindo ao TO-DO APP
 ## Este projeto é um aplicativo de Todo, utilizando firebase, navegação entre telas, AsyncStorage, redux, banco MongoDB e api em nodejs :
 
-### Instruções
+## Instruções
 
 ## npm install
 ### Ao baixar o código, na raiz da pasta 'todo_firebase' rode 'npm install'
