@@ -130,7 +130,6 @@ export default ({ navigation, route }) => {
     if (showDoneTasks) {
       visibleTasks_aux = [...tasks];
     } else {
-      const pending = task => task.doneAt === null;
       visibleTasks_aux = tasks.filter(task => task.doneAt === null);
     }
     dispatch({

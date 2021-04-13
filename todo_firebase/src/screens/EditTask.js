@@ -167,13 +167,11 @@ export default ({ navigation, route }) => {
   };
 
   const getDatePicker = () => {
-    let dateAux;
     let datePicker = (
       <DateTimePicker
         value={new Date()}
         onChange={(_, date) => {
           setDate(moment(date))
-          dateAux = moment(date)
           setshowDatePicker(false)
         }}
         mode="date"
@@ -203,7 +201,9 @@ export default ({ navigation, route }) => {
       <View style={routeLogin !== null && routeLogin !== undefined ? { padding: 20 } : {}}></View>
       <View style={styles.container}>
         <View style={[styles.iconBar, styles.header]}>
-          <Header navigation={navigation} />
+          <View style={{ paddingVertical: 15 }}>
+            <Header navigation={navigation} />
+          </View>
           <Text style={styles.headerText}>Editar Tarefa</Text>
         </View>
         <TextInput

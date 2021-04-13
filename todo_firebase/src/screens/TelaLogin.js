@@ -6,7 +6,6 @@ import auth from '@react-native-firebase/auth';
 import AsyncStorage from '@react-native-community/async-storage';
 import commonStyles from '../commonStyles'
 import { useDispatch } from 'react-redux';
-import { getTasksByUser } from '../Service/functions';
 
 //#region Styles
 const styles = StyleSheet.create({
@@ -81,21 +80,11 @@ export default ({ navigation }) => {
           uid: userAccount.user.uid
         }
       })
-      // const taskState = {tasks: [], visibleTasks: []}
-      // const tasks = await getTasksByUser(userAccount.user.uid)
-      //    taskState.tasks = tasks
-      //   dispatch({
-      //     type: 'tasksState',
-      //     tasksState: taskState,
-
-      //   })
-      // navigation.navigate('TaskList', { routeLogin: true })
+      
       navigation.navigate('Preload')
     } else {
       setMessageError("Preencha os campos")
     }
-
-
   }
   //#endregion
 

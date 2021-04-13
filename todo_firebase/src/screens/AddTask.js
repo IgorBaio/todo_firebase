@@ -30,9 +30,9 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingVertical: 15,
-    width:'100%',
-    left:-5,
-    top:-10,
+    width: '100%',
+    left: -5,
+    top: -10,
     backgroundColor: commonStyles.colors.today,
   },
   headerText: {
@@ -40,8 +40,8 @@ const styles = StyleSheet.create({
     color: commonStyles.colors.secundary,
     textAlign: 'center',
     fontSize: 18,
-    alignSelf:'center',
-    left:150
+    alignSelf: 'center',
+    left: 150
   },
   input: {
     fontFamily: commonStyles.fontFamily,
@@ -86,9 +86,9 @@ export default ({ navigation, route }) => {
   const [date, setDate] = useState(moment());
   const [showDatePicker, setshowDatePicker] = useState('')
   const dispatch = useDispatch()
-//#endregion
+  //#endregion
 
-//#region Funções
+  //#region Funções
   const filterTasks = () => {
     let visibleTasks_aux = null;
     if (showDoneTasks) {
@@ -119,7 +119,7 @@ export default ({ navigation, route }) => {
       estimateAt: `${newTask.estimateAt}`,
       doneAt: `${newTask.doneAt}`,
       status: newTask.status,
-      uid:newTask.uid
+      uid: newTask.uid
     })
     filterTasks()
   };
@@ -128,10 +128,10 @@ export default ({ navigation, route }) => {
       idlocal: Math.random().toString(),
       title: titulo,
       desc: descricao,
-      estimateAt:date,
+      estimateAt: date,
       doneAt: '',
       uid: user.uid.toString(),
-      status:'open'
+      status: 'open'
     };
     addTask(newTask)
     navigation.goBack()
@@ -168,40 +168,42 @@ export default ({ navigation, route }) => {
     }
     return datePicker;
   };
-//#endregion
-  
-return (
-  <>
-  <View style={routeLogin !== null && routeLogin !== undefined ? { padding: 20 } : {}}></View>
+  //#endregion
 
-    <View style={styles.container}>
-      <View style={[styles.iconBar, styles.header]}>
-        <Header navigation={navigation} />
-        <Text style={styles.headerText}>Nova Tarefa</Text>
-      </View>
-      <TextInput
-        style={styles.input}
-        placeholder="Informe o Título"
-        value={titulo}
-        onChangeText={desc => setTitulo(desc)}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Informe a Descrição"
-        value={descricao}
-        onChangeText={desc => setDescricao(desc)}
-      />
+  return (
+    <>
+      <View style={routeLogin !== null && routeLogin !== undefined ? { padding: 20 } : {}}></View>
 
-      <Text>{getDatePicker()}</Text>
-      <View style={styles.buttons}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={styles.buttonText}>Cancelar</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => save()}>
-          <Text style={styles.buttonText}>Salvar</Text>
-        </TouchableOpacity>
+      <View style={styles.container}>
+        <View style={[styles.iconBar, styles.header]}>
+          <View style={{ paddingVertical: 15 }}>
+            <Header navigation={navigation} />
+          </View>
+          <Text style={styles.headerText}>Nova Tarefa</Text>
+        </View>
+        <TextInput
+          style={styles.input}
+          placeholder="Informe o Título"
+          value={titulo}
+          onChangeText={desc => setTitulo(desc)}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Informe a Descrição"
+          value={descricao}
+          onChangeText={desc => setDescricao(desc)}
+        />
+
+        <Text>{getDatePicker()}</Text>
+        <View style={styles.buttons}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Text style={styles.buttonText}>Cancelar</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => save()}>
+            <Text style={styles.buttonText}>Salvar</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
-  </>
+    </>
   )
 }
