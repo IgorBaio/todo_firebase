@@ -16,6 +16,7 @@ import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 import AsyncStorage from '@react-native-community/async-storage';
 import Header from '../components/Header';
+import { addTasks } from '../Service/functions';
 
 //#region Style
 const styles = StyleSheet.create({
@@ -76,6 +77,7 @@ const styles = StyleSheet.create({
 
 export default ({ navigation, route }) => {
   //#region Declarações
+  const routeLogin = route?.params?.routeLogin || null
   const { showDoneTasks } = route.params
   const user = useSelector(state => state.save.user);
   const tasks = useSelector(state => state.save.tasks)
@@ -99,33 +101,37 @@ export default ({ navigation, route }) => {
   };
 
   const addTask = newTask => {
-    console.log('newTaks', newTask)
     if (!newTask.desc || !newTask.desc.trim()) {
       Alert.alert('Dados Inválidos', 'Descrição Inválida');
       return;
     }
     const tasks_aux = [...tasks];
-    tasks_aux.push({
-      id: Math.random(),
-      title: newTask.title,
-      desc: newTask.desc,
-      estimateAt: newTask.date,
-      doneAt: null,
-    });
+    tasks_aux.push(newTask);
     console.log(tasks_aux)
     dispatch({
       type: 'refreshTask',
       tasks: tasks_aux
     })
+    addTasks({
+      idlocal: newTask.idlocal,
+      title: newTask.title,
+      desc: newTask.desc,
+      estimateAt: `${newTask.estimateAt}`,
+      doneAt: `${newTask.doneAt}`,
+      status: newTask.status,
+      uid:newTask.uid
+    })
     filterTasks()
   };
   const save = () => {
     const newTask = {
-      id: Math.random(),
+      idlocal: Math.random().toString(),
       title: titulo,
       desc: descricao,
-      date,
-      uid: user.uid
+      estimateAt:date,
+      doneAt: '',
+      uid: user.uid.toString(),
+      status:'open'
     };
     addTask(newTask)
     navigation.goBack()
@@ -165,6 +171,9 @@ export default ({ navigation, route }) => {
 //#endregion
   
 return (
+  <>
+  <View style={routeLogin !== null && routeLogin !== undefined ? { padding: 20 } : {}}></View>
+
     <View style={styles.container}>
       <View style={[styles.iconBar, styles.header]}>
         <Header navigation={navigation} />
@@ -193,5 +202,6 @@ return (
         </TouchableOpacity>
       </View>
     </View>
+  </>
   )
 }

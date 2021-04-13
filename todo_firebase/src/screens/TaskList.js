@@ -19,6 +19,7 @@ import commonStyles from '../commonStyles';
 import Task from '../components/Task';
 import { useDispatch, useSelector } from 'react-redux';
 import Header from '../components/Header';
+import { removeTask } from '../Service/functions';
 
 //#region Styles
 const styles = StyleSheet.create({
@@ -139,33 +140,14 @@ export default ({ navigation, route }) => {
     AsyncStorage.setItem('tasksState', JSON.stringify({ tasks, visibleTasks: visibleTasks_aux }))
   };
 
-  const addTask = newTask => {
-    if (!newTask.desc || !newTask.desc.trim()) {
-      Alert.alert('Dados Inválidos', 'Descrição Inválida');
-      return;
-    }
-    const tasks_aux = [...tasks];
-    tasks_aux.push({
-      id: Math.random(),
-      title: newTask.title,
-      desc: newTask.desc,
-      estimateAt: newTask.date,
-      doneAt: null,
-    });
-    dispatch({
-      type: 'refreshTask',
-      tasks: tasks_aux
-    })
-    filterTasks()
-    navigation.goBack()
-  };
-
   const deleteTask = id => {
-    const tasks_aux = tasks.filter(task => task.id != id);
+    const tasks_aux = tasks.filter(task => task.idlocal != id);
     dispatch({
       type: 'refreshTask',
       tasks: tasks_aux
     })
+    const itemToRemoved = tasks.filter(task => task.idlocal === id)
+    removeTask(itemToRemoved)
   };
   //#endregion
 
@@ -192,12 +174,13 @@ export default ({ navigation, route }) => {
         <View style={styles.taskList}>
           <FlatList
             data={visibleTasks}
-            keyExtractor={item => `${item.id}`}
+            keyExtractor={item => `${item.idlocal}`}
             renderItem={({ item }) => {
               return (
                 <Task
                   item={item}
                   navigation={navigation}
+                  routeLogin={routeLogin}
                   showDoneTasks={showDoneTasks}
                   onDelete={deleteTask}
                 />
@@ -208,7 +191,7 @@ export default ({ navigation, route }) => {
         </View>
         <TouchableOpacity
           style={styles.addButton}
-          onPress={() => navigation.navigate('AddTask', { onSave: addTask, showDoneTasks })}
+          onPress={() => navigation.navigate('AddTask', { showDoneTasks, routeLogin })}
           activeOpacity={0.7}>
           <IconMaterial name="add" size={40} color={commonStyles.colors.secundary} />
         </TouchableOpacity>

@@ -17,6 +17,7 @@ import { useSelector } from 'react-redux';
 import IconMaterial from 'react-native-vector-icons/MaterialCommunityIcons';
 import AsyncStorage from '@react-native-community/async-storage';
 import Header from '../components/Header';
+import { removeTask, updateTask } from '../Service/functions';
 
 //#region Styles
 const styles = StyleSheet.create({
@@ -91,13 +92,13 @@ const styles = StyleSheet.create({
 
 export default ({ navigation, route }) => {
   //#region Declarações
-  const { item } = route.params
+  const { item, routeLogin } = route.params
   const showDoneTasks = route.params.showDoneTasks || true
   const tasks = useSelector(state => state.save.tasks)
   const user = useSelector(state => state.save.user);
   const [titulo, setTitulo] = useState(item.title)
   const [descricao, setDescricao] = useState(item.desc)
-  const [date, setDate] = useState(moment(item.estimateAt).format('ddd, D [de] MMMM [de] YYYY'));
+  const [date, setDate] = useState(moment(item.estimateAt));
   const [showDatePicker, setshowDatePicker] = useState('')
   const dispatch = useDispatch()
   //#endregion
@@ -124,7 +125,7 @@ export default ({ navigation, route }) => {
     }
     let tasks_aux = [...tasks];
     tasks_aux.forEach(task => {
-      if (task.id === newTask.id) {
+      if (task.idlocal === newTask.idlocal) {
         task.title = newTask.title
         task.desc = newTask.desc
         task.estimateAt = newTask.estimateAt
@@ -136,27 +137,32 @@ export default ({ navigation, route }) => {
       type: 'refreshTask',
       tasks: tasks_aux
     })
+    updateTask(newTask)
     filterTasks()
     navigation.goBack()
   };
 
   const deleteTask = id => {
-    const tasks_aux = tasks.filter(task => task.id != id);
+    const tasks_aux = tasks.filter(task => task.idlocal != id);
     dispatch({
       type: 'refreshTask',
       tasks: tasks_aux
     })
+    const itemToRemoved = tasks.filter(task => task.idlocal === id)
+    removeTask(itemToRemoved)
     navigation.goBack()
   };
 
   const save = () => {
     const editedTask = {
-      id: item.id,
+      idlocal: item.idlocal,
       title: titulo,
       desc: descricao,
-      date: date,
-      uid: user.uid
+      estimateAt: date,
+      uid: user.uid.toString(),
+      status: item.status
     };
+
     editTask(editedTask)
   };
 
@@ -166,18 +172,16 @@ export default ({ navigation, route }) => {
       <DateTimePicker
         value={new Date()}
         onChange={(_, date) => {
-          setDate(moment(date).format(
-            'ddd, D [de] MMMM [de] YYYY'
-          ))
-          dateAux = moment(dateAux).format(
-            'ddd, D [de] MMMM [de] YYYY'
-          )
+          setDate(moment(date))
+          dateAux = moment(date)
           setshowDatePicker(false)
         }}
         mode="date"
       />
     );
-    const dateString = date
+    const dateString = moment(date).format(
+      'ddd, D [de] MMMM [de] YYYY',
+    )
 
     if (Platform.OS === 'android') {
       datePicker = (
@@ -195,41 +199,44 @@ export default ({ navigation, route }) => {
   //#endregion
 
   return (
-    <View style={styles.container}>
-      <View style={[styles.iconBar, styles.header]}>
-        <Header navigation={navigation} />
-        <Text style={styles.headerText}>Editar Tarefa</Text>
-      </View>
-      <TextInput
-        style={styles.input}
-        placeholder="Informe o Título"
-        value={titulo}
-        onChangeText={desc => setTitulo(desc)}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Informe a Descrição"
-        value={descricao}
-        onChangeText={desc => setDescricao(desc)}
-      />
+    <>
+      <View style={routeLogin !== null && routeLogin !== undefined ? { padding: 20 } : {}}></View>
+      <View style={styles.container}>
+        <View style={[styles.iconBar, styles.header]}>
+          <Header navigation={navigation} />
+          <Text style={styles.headerText}>Editar Tarefa</Text>
+        </View>
+        <TextInput
+          style={styles.input}
+          placeholder="Informe o Título"
+          value={titulo}
+          onChangeText={desc => setTitulo(desc)}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Informe a Descrição"
+          value={descricao}
+          onChangeText={desc => setDescricao(desc)}
+        />
 
-      <Text>{getDatePicker()}</Text>
-      <View style={styles.buttons}>
-        <TouchableOpacity onPress={() => deleteTask(item.id)} style={[styles.buttonsBackground, styles.logout, styles.trashButton]}>
-          <IconMaterial
-            name='trash-can'
-            size={20}
-            color={commonStyles.colors.secundary}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={styles.buttonText}>Cancelar</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => save()}>
-          <Text style={styles.buttonText}>Salvar</Text>
-        </TouchableOpacity>
+        <Text>{getDatePicker()}</Text>
+        <View style={styles.buttons}>
+          <TouchableOpacity onPress={() => deleteTask(item.idlocal)} style={[styles.buttonsBackground, styles.logout, styles.trashButton]}>
+            <IconMaterial
+              name='trash-can'
+              size={20}
+              color={commonStyles.colors.secundary}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Text style={styles.buttonText}>Cancelar</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => save()}>
+            <Text style={styles.buttonText}>Salvar</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </>
   )
 }
 
